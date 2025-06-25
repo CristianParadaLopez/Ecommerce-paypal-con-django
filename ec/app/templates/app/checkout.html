@@ -1,0 +1,95 @@
+ {% extends 'app/base.html' %}
+{% load static %}
+{% block title %}verificar{% endblock title %}
+{% block main-content %}
+<div class="container">
+    {% if messages %}
+    {% for msg in messages %}
+        <div class="alert alert-danger" role="alert">
+            {{msg}}
+        </div>
+    {% endfor %}
+    {% endif %}
+    <div class="row mt-5">
+        <div class="col-sm-6">
+            <h4>Resumen del pedido</h4>
+        <hr>
+        {% for item in cart_items %}
+            <div class="card mb-2">
+                <div class="card-body text-white" style="background: rgb(94,60,135);
+                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
+                    <h5>Producto: {{item.product.title}}</h5>
+                    <p>Cantidad: {{item.quantity}}</p>
+                    <p class="fw-bold">Precio: {{item.product.discounted_price}} </p>
+                </div>
+            </div>
+        {% endfor %}
+        <p class="f-bold">Total del Costo + USD. 40 = {{totalamount}} </p>
+        <small>Se le agrega el costo del pedido</small>
+        </div>
+        <div class="col-sm-4 offset-sm-1">
+            <h4>Seleccionar dirección de compras</h4>
+            <hr>
+            <form method="post" id="myform" >
+                {% csrf_token %}
+                {% for ad in add %}
+                <div class="card text-white" style="background: rgb(94,60,135);
+                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
+                    <h5>{{ad.name}}</h5>
+                    <p class="text-white">móvil : {{ad.mobile}}</p>
+                    <p class="text-white">{{ad.locality}} {{ad.state}} {{ad.city}}  - {{ad.zipcode}}</p>
+                </div>
+            </div>
+            
+                {% endfor %}
+                <div class="form-check mb-3" style="background: rgb(94,60,135);
+                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
+                    <label for="totalamount" class="form-label">Monto Total</label>
+                    <input style="background: rgb(94,60,135);
+                    background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);"  type="number" class="form-control text-white"  name="totalamount" value={{totalamount}} readonly>
+                </div>
+                <div class="text-end">
+                    <div id="paypal-button-container"></div>
+                        
+                    {% comment %} <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continuar</button> {% endcomment %}
+                    {% comment %} <button id="rzp-button1" type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Pago</button> {% endcomment %}
+                </div>
+
+            </form>
+        </div>
+        <br>
+    </div>
+</div> 
+<br><br>
+{% endblock main-content %}
+
+{% block payment-gateway %}
+<script src="https://www.paypal.com/sdk/js?client-id=AVNibbIR-fAXfg4Y2zgRyhWG43RUq5SyZrqlXCTm3HAfe5Va64W8kw7pANHwk6-T4C271FY_SxQsY8aV&currency=USD"></script>
+<script>
+  paypal.Buttons({
+    createOrder: function (data, actions) {
+      return actions.order.create({
+        purchase_units: [
+          {
+            amount: {
+              value: '{{ totalamount }}',
+            },
+          },
+        ],
+      });
+    },
+    onApprove: function (data, actions) {
+      return actions.order.capture().then(function (details) {
+        console.log(details);
+        // Hacer algo después de que el pago se haya aprobado
+        window.location.href = '/payment/success/';
+      });
+    },
+    onError: function (err) {
+      console.log(err);
+      // Hacer algo en caso de error en el pago
+    },
+  }).render('#paypal-button-container');
+</script>
+
+{% endblock payment-gateway %}
