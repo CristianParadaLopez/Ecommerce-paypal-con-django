@@ -1,29 +1,48 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %}Busqueda del resultado{% endblock title %}
+{% block title %}Resultado de Búsqueda{% endblock title %}
+
 {% block main-content %}
 <div class="container my-5">
-<div class="row">
-    <div class="col-sm-8">
-            <div class="row">
-                {% for prod in product %}
-                <div class="col-sm.4 text-center mb-4 hover-shadow">
-                    <a href="{% url 'product-detail' prod.id %}" class="btn">
-                        <div>
-                            <img src="{{prod.product_image.url}}" width="300px" height="200px" />
-                            <div class="fw-bold">{{product.title}}</div>
-                            <div class="fw-bold text-danger">
-                                USD.{{product.discounted_price}}/-
-                                <small class="fw-ligth text-decoration-line-through">{{product.selling_price}}</small>
-                            </div>
-                        </div>
+    <h2 class="text-center mb-4">Resultados de la búsqueda</h2>
+    <div class="row g-4">
+        {% if product %}
+            {% for prod in product %}
+            <div class="col-sm-6 col-md-4 col-lg-3" data-aos="fade-up">
+                <div class="card h-100 shadow-sm hover-shadow">
+                    <a href="{% url 'product-detail' prod.id %}">
+                        <img src="{{ prod.imagen_producto.url }}" class="card-img-top" alt="{{ prod.title }}" style="height: 200px; object-fit: cover;">
                     </a>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ prod.title }}</h5>
+                        <p class="card-text text-danger fw-bold">
+                            USD {{ prod.precio_descuento }}
+                            {% if prod.selling_price %}
+                            <small class="text-muted text-decoration-line-through fs-6">USD {{ prod.selling_price }}</small>
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'product-detail' prod.id %}" class="btn btn-primary btn-sm mt-2">Ver Detalle</a>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-center fs-5">No se encontraron productos para tu búsqueda.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 
-
 {% endblock main-content %}
+
+{% block extra-js %}
+<!-- AOS JS para animaciones -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 800,
+    once: true
+  });
+</script>
+{% endblock extra-js %}

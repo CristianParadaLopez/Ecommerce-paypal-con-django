@@ -1,13 +1,55 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %}Busqueda del resultado{% endblock title %}
+{% block title %}Pago Exitoso{% endblock title %}
+
 {% block main-content %}
 <div class="container my-5">
-<div class="row">
-    <div class="col-sm-8">
-        <h3> PAGO EXITOSO </h3>
+    <div class="alert alert-success text-center shadow-sm p-4 rounded">
+        <h2 class="fw-bold">✅ ¡Pago realizado con éxito!</h2>
+        <p class="mb-0">Gracias por tu compra, {{ request.user.username }}.</p>
     </div>
 
-</div>
+    {% if payment %}
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h4 class="fw-bold">📄 Resumen del Pago</h4>
+            <hr>
+            <p><strong>Monto:</strong> USD {{ payment.amount }}</p>
+            <p><strong>Fecha:</strong> {{ payment.created_at }}</p>
+            <p><strong>ID de Orden (PayPal):</strong> {{ payment.order_id }}</p>
+            <p><strong>ID de Pago (PayPal):</strong> {{ payment.payment_id }}</p>
+            <p><strong>Estado:</strong> 
+                {% if payment.paid %}
+                    <span class="badge bg-success">Pagado</span>
+                {% else %}
+                    <span class="badge bg-danger">Pendiente</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h4 class="fw-bold">🛒 Productos Comprados</h4>
+        <div class="list-group">
+            {% for order in orders %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold">{{ order.product.title }}</h6>
+                    <p class="mb-1">Cantidad: {{ order.cantidad }}</p>
+                    <p class="mb-0 text-muted">Subtotal: USD {{ order.total_cost }}</p>
+                </div>
+                <img src="{{ order.product.imagen_producto.url }}" 
+                     alt="{{ order.product.title }}" 
+                     class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'orders' %}" class="btn btn-primary px-4">📦 Ver mis pedidos</a>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4">🏠 Seguir comprando</a>
+    </div>
 </div>
 {% endblock main-content %}

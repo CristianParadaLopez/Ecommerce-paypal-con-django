@@ -1,49 +1,174 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %}Contactanos{% endblock title %}
+{% block title %}Contáctanos{% endblock title %}
+
+{% block extra-css %}
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<style>
+/* Parallax Banner */
+.parallax-contact {
+    background-image: url("{% static 'app/images/banner/b2.jpeg' %}");
+    min-height: 55vh;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+}
+
+/* Tarjetas de Contacto */
+.contact-card {
+    background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.contact-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* Iconos de contacto */
+.contact-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ffdd57;
+}
+
+/* Redes Sociales */
+.social-link {
+    font-size: 1.8rem;
+    color: white;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+.social-link:hover {
+    color: #ffdd57;
+}
+
+/* Títulos de Sección */
+.section-title {
+    position: relative;
+    margin-bottom: 40px;
+    font-weight: bold;
+    font-size: 2rem;
+}
+.section-title::after {
+    content: '';
+    width: 60px;
+    height: 3px;
+    background: #ffdd57;
+    display: block;
+    margin: 10px auto 0 auto;
+    border-radius: 2px;
+}
+
+/* Mapa */
+.ratio iframe {
+    border-radius: 12px;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .contact-card {
+        padding: 25px 15px;
+    }
+    .contact-icon {
+        font-size: 2.5rem;
+    }
+}
+</style>
+{% endblock extra-css %}
 
 {% block banner-slider %}
-<br>
-<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="{% static 'app/images/banner/b1.jpeg'%}" class="d-block w-100" alt="Banner img">
-        </div>
-        <div class="carousel-item">
-            <img src="{% static 'app/images/banner/b2.jpeg'%}" class="d-block w-100" alt="Banner img">
-        </div>
-        <div class="carousel-item">
-            <img src="{% static 'app/images/banner/b3.jpeg'%}" class="d-block w-100" alt="Banner img">
-        </div>
-        <div class="carousel-item">
-            <img src="{% static 'app/images/banner/b4.jpeg'%}" class="d-block w-100" alt="Banner img">
-        </div>
+<div class="parallax-contact">
+    <div class="text-center" data-aos="fade-down">
+        <h1 class="display-4 fw-bold">Contáctanos</h1>
+        <p class="fs-5 mt-2" data-aos="fade-up" data-aos-delay="200">Estamos aquí para ayudarte</p>
     </div>
-
-    <!-- Botones de navegación -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-    </button>
 </div>
 {% endblock banner-slider %}
+
 {% block main-content %}
-<div class="container mt-3 text-white">
-    <br>
-    <h2 class="text-center">Contactanos</h2>
-    <br>
-    <div class="row container bg-midnight text-tahiti">
-      <p class="fs-4 text-center">Dirección: Intersección NorOriente Carretera a Los Planes de Renderos Km. No.3, San Salvador CP 1101 Universidad Luterana Salvadoreña</p>
-      <p class="fs-4 text-center">Integrantes: <a href="https://www.instagram.com/mininolopez/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>Minino</p>
-      <p class="fs-4 text-center"><a href="https://www.instagram.com/d3nisit0/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>Dennis</p>
-      <p class="fs-4 text-center"><a href="https://www.instagram.com/alberthtoaaad/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>Alberto</p>
-      <p class="fs-4 text-center">Correo: correo@gmail.com</p>
+<div class="container my-5">
+    <!-- Información de Contacto -->
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold section-title">Información de Contacto</h2>
+        <p class="fs-5 ">Encuéntranos o escríbenos en cualquier momento</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Dirección -->
+        <div class="col-md-4" data-aos="fade-right">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Dirección</h5>
+                <p class="small">
+                    Intersección NorOriente Carretera a Los Planes de Renderos Km. No.3, San Salvador CP 1101 Universidad Luterana Salvadoreña
+                </p>
+            </div>
+        </div>
+
+        <!-- Correo -->
+        <div class="col-md-4" data-aos="fade-up">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="bi bi-envelope-fill"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Correo</h5>
+                <p class="small">cristianparadalopez@gmail.com</p>
+            </div>
+        </div>
+
+        <!-- Integrantes / Redes -->
+        <div class="col-md-4" data-aos="fade-left">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Integrantes</h5>
+                <p>
+                    <a href="https://github.com/CristianParadaLopez" target="_blank" class="social-link"><i class="fab fa-github"></i></a>
+                    Minino
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <div class="mt-5" data-aos="fade-up">
+        <h3 class="text-center mb-3">Ubicación</h3>
+        <div class="ratio ratio-16x9">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3876.123456789!2d-89.203456!3d13.705123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f6334567890abcdef%3A0xabcdef1234567890!2sUniversidad%20Luterana%20Salvadore%C3%B1a!5e0!3m2!1ses!2ssv!4v1696200000000" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
     </div>
 </div>
-<br><br>
 {% endblock main-content %}
 
+{% block extra-js %}
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
+{% endblock extra-js %}

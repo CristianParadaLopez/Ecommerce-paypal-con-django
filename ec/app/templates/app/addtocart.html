@@ -1,64 +1,177 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% block title %}Carro{% endblock title %}
+
 {% block main-content %}
 <div class="container my-5">
-    <div class="row">
-        {% if cart %}
-        <h1 class="text-center mb-5">Carro de la compra</h1>
-        <div class="col-sm-8">
-            <div class="card">
-                <div class="card-body text-light" style="background: rgb(94,60,135);
-                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-                    <h3>Carrito</h3>
-                    {% for item in cart %}
-                    <div class="row">
-                        <div class="col-sm-3 text-center align-self-center"><img src="{{item.product.product_image.url}}" alt="" srcset="" class="img-fluid img-thumbnail shadow-sm" height="150" width="150"></div>
-                        <div class="col-sm-9">
-                            <div>
-                                <h5>{{ item.product.title }}</h5>
-                                <p class="mb-2 small">{{ item.product.description }}</p>
-                                <div class="my-3">
-                                    <label for="quantity">Cantidad:</label>
-                                    <a class="minus-cart btn" pid="{{ item.product.id }}"><i class="fas fa-minus-square fa-lg"></i></a>
-                                    <span id="quantity">{{ item.quantity }}</span>
-                                    <a class="plus-cart btn" pid="{{ item.product.id }}"><i class="fas fa-plus-square fa-lg"></i></a>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <a href="#" class="remove-cart btn btn-sm btn-danger mr-3" pid="{{ item.product.id }}">Remover item</a>
-                                    <p class="mb-0"><span><strong>USD. {{ item.product.discounted_price }}</strong></span></p>
-                                </div>
+    {% if cart %}
+    <h1 class="text-center mb-5 fw-bold">Carro de la Compra</h1>
+    <div class="row g-4">
+
+        <!-- Lista de productos -->
+        <div class="col-lg-8">
+            {% for item in cart %}
+            <div class="card mb-3 shadow-sm rounded-3 hover-card" id="cart-item-{{ item.product.id }}">
+                <div class="row g-0 align-items-center">
+                    <div class="col-md-3 text-center p-3">
+                        <img src="{{ item.product.imagen_producto.url }}" alt="{{ item.product.title }}"
+                             class="img-fluid rounded shadow-sm hover-scale">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ item.product.title }}</h5>
+                            <p class="card-text text-muted small">{{ item.product.description|truncatechars:80 }}</p>
+
+                            <div class="my-3 d-flex align-items-center gap-2">
+                                <label class="fw-bold mb-0">Cantidad:</label>
+                                <button class="btn btn-outline-secondary btn-sm minus-cart" pid="{{ item.product.id }}">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="cantidad fw-bold px-2">{{ item.cantidad }}</span>
+                                <button class="btn btn-outline-secondary btn-sm plus-cart" pid="{{ item.product.id }}">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="fw-bold text-primary fs-5">USD {{ item.product.precio_descuento }}</span>
+                                <button class="btn btn-outline-danger btn-sm remove-cart" pid="{{ item.product.id }}">
+                                    <i class="fas fa-trash-alt"></i> Remover
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <hr class="text-muted">
-                    {% endfor %}
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <div class="col-sm-4">
-            <div class="card" style="background: rgb(94,60,135);
-            background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
+
+        <!-- Resumen del pedido -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white fw-bold text-center">
+                    Resumen del Pedido
+                </div>
                 <div class="card-body">
-                    <h3 class="text-light">La cantidad total de</h3>
-                    <ul class="list-group " >
-                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0 text-light" style="background: rgb(94,60,135);
-                        background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">Cantidad<span id="amount">USD. {{ amount }}</span></li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 text-light" style="background: rgb(94,60,135);
-                        background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">Envío<span>USD. 40.00</span></li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3 text-light" style="background: rgb(94,60,135);
-                        background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-                            <strong>Total</strong>
-                            <span id="totalamount"><strong>USD. {{ totalamount }}</strong></span>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between border-0 px-0">
+                            Subtotal
+                            <span id="amount" class="fw-bold">USD {{ amount }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            Envío
+                            <span>USD 40.00</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between fw-bold border-0 px-0 mb-3">
+                            Total
+                            <span id="totalamount" class="fw-bold">USD {{ totalamount }}</span>
                         </li>
                     </ul>
-                    <div class="d-grid"><a href="{% url 'checkout' %}" class="btn btn-primary">Realizar pedido</a></div>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary w-100 fw-bold shadow-sm hover-grow">
+                        Realizar Pedido
+                    </a>
                 </div>
             </div>
         </div>
-        {% else %}
-        <h1 class="text-center mb-5">El carrito está vacío</h1>
-        {% endif %}
+
     </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <h2>El carrito está vacío</h2>
+        <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3 hover-grow">Ir a la tienda</a>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+/* Efectos */
+.hover-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.hover-grow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+/* Cards */
+.hover-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.card {
+    background-color: #fdfdfd;
+    border: none;
+}
+
+.btn-outline-secondary {
+    border-radius: 0.375rem;
+    transition: all 0.3s;
+}
+.btn-outline-secondary:hover {
+    background-color: #28285a;
+    color: #fff;
+    border-color: #16213E;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    function actualizarTotales(data, prod_id) {
+        // Actualizar totales
+        document.getElementById('amount').innerText = `USD ${data.amount}`;
+        document.getElementById('totalamount').innerText = `USD ${data.totalamount}`;
+
+        const cartItem = document.getElementById(`cart-item-${prod_id}`);
+        if (data.cantidad === 0) {
+            cartItem.remove();
+        } else {
+            cartItem.querySelector('.cantidad').innerText = data.cantidad;
+        }
+
+        if (data.totalamount === 0) {
+            location.reload();  
+        }
+    }
+
+    // Añadir funcionalidad a botones
+    document.querySelectorAll('.plus-cart').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const prod_id = btn.getAttribute('pid');
+            fetch(`/pluscart/?prod_id=${prod_id}`)
+                .then(res => res.json())
+                .then(data => actualizarTotales(data, prod_id));
+        });
+    });
+
+    document.querySelectorAll('.minus-cart').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const prod_id = btn.getAttribute('pid');
+            fetch(`/minuscart/?prod_id=${prod_id}`)
+                .then(res => res.json())
+                .then(data => actualizarTotales(data, prod_id));
+        });
+    });
+
+    document.querySelectorAll('.remove-cart').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const prod_id = btn.getAttribute('pid');
+            fetch(`/removecart/?prod_id=${prod_id}`)
+                .then(res => res.json())
+                .then(data => actualizarTotales(data, prod_id));
+        });
+    });
+
+});
+</script>
 {% endblock main-content %}

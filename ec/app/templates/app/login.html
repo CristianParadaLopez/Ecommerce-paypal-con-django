@@ -1,32 +1,86 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% block title %}Acceso{% endblock title %}
+
 {% block main-content %}
 <div class="container">
-    <div class="row my-3">
-        <div class="col-sm-6 offset-sm-3">
-         <h3>Acceso</h3>
-         <hr>
-         <form action="" method="post" novalidate class="shadow p-5">
-            {% csrf_token %}
-            {% for fm in form %}
-                {{fm.label_tag}} {{fm}} <small class="text-danger">{{fm.errors|striptags}}</small><br>
-            {% endfor %}
+    <div class="row justify-content-center my-5">
+        <div class="col-sm-6 col-md-5 col-lg-4">
+            <div class="card shadow-lg p-4 rounded-4 border-0 login-card">
+                <h3 class="text-center mb-4 fw-bold">Acceso</h3>
+                <form action="" method="post" novalidate>
+                    {% csrf_token %}
 
-            <small><a href="{% url 'password_reset' %}">Se te olvido la contraseña ?</a></small>
-            <br>
-            <input type="submit" class="btn btn-primary mt-4" value="Login">
-            <div class="text-center text-primary fw-bold"><small>Nuevo usuario?<a href=" {% url 'customerregistration' %}"
-                class="text-danger">Create una cuenta</a> </small>
+                    {% for fm in form %}
+                    <div class="mb-3">
+                        {{ fm.label_tag }}
+                        {{ fm }}
+                        {% if fm.errors %}
+                        <div class="text-danger small mt-1">{{ fm.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="mb-3 text-end">
+                        <a href="{% url 'password_reset' %}" class="text-decoration-none small text-primary">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <input type="submit" class="btn btn-primary btn-lg fw-bold login-btn" value="Iniciar Sesión">
+                    </div>
+
+                    <div class="text-center small">
+                        Nuevo usuario? 
+                        <a href="{% url 'customerregistration' %}" class="text-danger fw-bold">Crear una cuenta</a>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger mt-3">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
             </div>
-
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                <p class="alert alert-danger my-3">{{error}}</p>
-                {% endfor %}
-            {% endif %}
-        </form>
         </div>
     </div>
 </div>
+
+<!-- Estilos -->
+<style>
+.login-card {
+    background: #ffffff;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1.5rem 3rem rgba(0,0,0,0.15);
+}
+
+.login-card input {
+    border-radius: 0.5rem;
+    height: 45px;
+    padding: 0 15px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+}
+.login-card input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+.login-btn {
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+.login-btn:hover {
+    background: #0a58ca;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+a.text-danger:hover {
+    text-decoration: underline;
+}
+</style>
 {% endblock main-content %}

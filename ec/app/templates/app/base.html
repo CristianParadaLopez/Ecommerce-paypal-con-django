@@ -1,124 +1,304 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.tailwindcss.com/2.2.16/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" href="{% static 'app/css/owl.carousel.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'app/css/all.min.css' %}"/>
-    <link rel="stylesheet" href="{% static 'app/css/style.css' %}"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-xgA3j9QAj3VK8hU5YbsJP2e0h3IDB+YZwVEdrRHuVG1vQr0p5ptNNYK3hLhJZffZ1g9gRE8K8ohZUjO49vtLAg==" crossorigin="anonymous" />
+  <!-- ===== Dependencias CSS/JS ===== -->
+  <!-- (Opcional) Tailwind (si lo usas en otras plantillas). Si te da problemas, coméntalo/remuévelo. -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <title>Productos del día | {% block title %}{% endblock title %}</title>
+  <!-- Bootstrap 5 (CSS) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+  <title>{% block title %}Mi Ecommerce{% endblock title %}</title>
+
+  <!-- ===== Estilos específicos del layout ===== -->
+  <style>
+    /* ===== Contenedor header ===== */
+    header.site-header {
+      background: linear-gradient(90deg, #1A1A2E, #16213E);
+      color: #fff;
+      min-height: 64px;
+    }
+
+    /* Logo (siempre alineado a la izquierda y con altura fija) */
+    .site-logo img {
+      height: 48px;
+      width: auto;
+      display: block;
+    }
+
+    /* Forzamos que el contenedor del header centre verticalmente */
+    .header-inner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Links del header */
+    .site-nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 0.35rem 0.6rem;
+      display:inline-block;
+    }
+    .site-nav a:hover { color: #E94560; text-decoration:none; }
+
+    /* Botón acento (reutilizable) */
+    .btn-acento {
+      background-color: #E94560;
+      color: #fff;
+      border-radius: 8px;
+      transition: background-color .2s ease;
+    }
+    .btn-acento:hover { background-color: #C81E45; color: #fff; }
+
+    /* Dropdown del usuario como overlay absoluto */
+    .nav-user {
+      position: relative; 
+    }
+    .nav-user .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 3000;
+      min-width: 10rem;
+    }
+
+    /* Offcanvas ancho en móvil */
+    .offcanvas-start { width: 80% !important; max-width: 420px; }
+
+    /* Footer */
+    footer.site-footer {
+      background: linear-gradient(90deg, #16213E, #1A1A2E);
+      color: #F1F1F1;
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+      .site-nav { display: none; } 
+    }
+  </style>
 </head>
 
-<body class="text-light" style="background: rgb(39,10,73);
-background: linear-gradient(90deg, rgba(39,10,73,1) 14%, rgba(6,6,6,1) 54%, rgba(63,9,105,1) 98%);">
-    
-    <nav class="bg-info navbar navbar-expand-lg" style="background: rgb(94,60,135);
-    background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'home' %}">
-            
-            <img src="{% static "app/images/logo.png" %}" width="100" height="50" />
+<body class="bg-light d-flex flex-column min-vh-100">
 
+  <!-- ===== HEADER ===== -->
+  <header class="site-header shadow">
+    <div class="container header-inner py-2">
+      <!-- Logo -->
+      <div class="site-logo me-3">
+        <a href="{% url 'home' %}">
+          <img src="{% static 'app/images/logo.png' %}" alt="Logo">
+        </a>
+      </div>
 
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Hogar</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text_dark " style="text-decoration: none;" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Productos
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'category' 'NK' %} ">Nike</a></li>
-                  <li><a class="dropdown-item" href="{% url 'category' 'AD' %}">Adidas</a></li>
-                  <li><a class="dropdown-item" href="{% url 'category' 'CA' %}">Camisas</a></li>
-                  <li><a class="dropdown-item" href="{% url 'category' 'CO' %}">Conjuntos</a></li>
-                  <li><a class="dropdown-item" href="{% url 'category' 'PA' %}">Pantalones</a></li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'about' %}">Sobre nosotros</a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'contact' %}">Contactanos</a>
-              </li>
-
-            </ul>
-            <form class="d-flex" role="search" action="/search"> 
-              <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
-              <button class="btn btn-outline-dark" type="submit">Buscar</button>
-            </form>
-          </div>
-
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown mx-2">
-                <a class="nav-link dropdown-toggle text-white" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Minino Tecs
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                    <li><a class="dropdown-item" href="{% url 'profile' %}">Perfil</a></li>
-                    <li><a class="dropdown-item" href="{% url 'passwordchange' %}">Cambiar contraseña</a></li>
-                    <li><a class="dropdown-item" href="{% url 'logout' %}">Salir</a></li>
-                  </ul>
-             </li>      
-             <li class="nav-item mx-2">
-                <a href="{% url 'showcart' %}" class="nav-link text-white"><span class="badge bg-danger">{% if totalitem > 0 %}{{totalitem}} {% endif %}</spa>Cart</a>
-             </li>
-             <li class="nav-item mx-2">
-                <a href="{% url 'showwishlist' %}" class="nav-link text-white"><span class="badge bg-danger">{% if wishitem > 0 %}{{wishitem}}{% endif %}</span> <i class="fa fa-heart"></i></a>
-             </li>
-             {% else %}
-             <li class="nav-item mx-2">
-                <a href="{% url 'login' %}" class="nav-link text-white">Acceso</a>
-             </li>
-             <li class="nav-item mx-2">
-              <a href="{% url 'customerregistration' %}" class="nav-link text-white">Registrarse</a>
-          </li>
-          {% endif %}
-         </ul>
-        </div>
+      <!-- Navegación principal (visible en escritorio) -->
+      <nav class="site-nav ms-2 me-auto d-none d-md-flex align-items-center">
+        <a href="{% url 'home' %}" class="me-2">Inicio</a>
+        <a href="{% url 'about' %}" class="me-2">Sobre nosotros</a>
+        <a href="{% url 'contact' %}" class="me-2">Contacto</a>
       </nav>
 
-      {% block banner-slider %}{% endblock banner-slider %}
-      {% block information %}{% endblock information %}
-      {% block main-content %}{% endblock main-content %}
-      {% block payment-gateway %}{% endblock payment-gateway %}
+      <!-- Buscador (escritorio) -->
+      <form class="d-none d-md-flex align-items-center me-3" role="search" action="/search">
+        <input name="search" class="form-control form-control-sm" type="search" placeholder="Buscar..." aria-label="Buscar">
+        <button class="btn btn-acento btn-sm ms-2" type="submit">Buscar</button>
+      </form>
 
-      <footer class="container-fluid fixed-bottom text-center p-1 mt-5" style="background: rgb(94,60,135);
-      background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-        Minino Tecs<br>
-        Sistema Ecommerce de los GOOD
-      </footer>
+      <!-- Botón modo oscuro -->
+      <button id="darkModeToggle" class="btn btn-sm btn-outline-light me-3" title="Modo oscuro">
+        <i class="fas fa-moon"></i>
+      </button>
 
+      <!-- Usuario / Carrito / Wishlist -->
+      <div class="d-flex align-items-center gap-3">
+        {% if request.user.is_authenticated %}
+          <!-- Dropdown de usuario -->
+          <div class="nav-user dropdown">
+            <button class="btn btn-sm dropdown-toggle text-white bg-transparent border-0" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ request.user.username }}
+            </button>
 
+            <!-- Menú absoluto (overlay) -->
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn">
+              <li><a class="dropdown-item" href="{% url 'address' %}">Perfil</a></li>
+              <li><a href="{% url 'orders' %}" class="dropdown-item">Ver  Pedidos</a></li>
+              <li><a class="dropdown-item" href="{% url 'passwordchange' %}">Cambiar contraseña</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <!-- Logout -->
+                <form method="post" action="{% url 'logout' %}" class="m-0">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item">Salir</button>
+                </form>
+              </li>
+            </ul>
+          </div>
 
-      
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-KyfBUx4q8afHEzGeXc5xr4AWoMX2bSE6dRqG2bW+KL/Ar44dBFXKu2yB29rUXt+1Gvovu1B/hlHD4QJx5bpGEg==" crossorigin="anonymous"></script>
-      
-      <script src="{% static 'app/js/owl.carousel.min.js' %}"></script>
-      <script src="{% static 'app/js/all.min.js' %}"></script>
-      <script src="{% static 'app/js/myscript.js' %}"></script> 
-   </body>
+          <!-- Carrito -->
+          <a href="{% url 'showcart' %}" class="text-white position-relative" title="Carrito">
+            <i class="fa fa-shopping-cart fa-lg"></i>
+            {% if totalitem and totalitem > 0 %}
+              <span class="badge bg-danger rounded-circle position-absolute" style="top:-6px; right:-8px; font-size:.65rem;">
+                {{ totalitem }}
+              </span>
+            {% endif %}
+          </a>
+
+          <!-- Wishlist -->
+          <a href="{% url 'showwishlist' %}" class="text-white ms-2 position-relative ms-2" title="Wishlist">
+            <i class="fa fa-heart fa-lg"></i>
+            {% if wishitem and wishitem > 0 %}
+              <span class="badge bg-danger rounded-circle position-absolute" style="top:-6px; right:-8px; font-size:.65rem;">
+                {{ wishitem }}
+              </span>
+            {% endif %}
+          </a>
+
+        {% else %}
+          <!-- Acceso -->
+          <a href="{% url 'login' %}" class="text-white">Acceso</a>
+          <a href="{% url 'customerregistration' %}" class="text-white ms-2">Registro</a>
+        {% endif %}
+      </div>
+
+      <!-- Botón hamburguesa (móvil) -->
+      <button class="btn btn-sm btn-light d-md-none ms-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
+        <i class="fa fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== OFFCANVAS (móvil) ===== -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
+    <div class="offcanvas-header">
+      <h5 id="menuLateralLabel" class="offcanvas-title">Menú</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="mb-3">
+        <a class="d-block py-2" href="{% url 'home' %}">Inicio</a>
+        <a class="d-block py-2" href="{% url 'about' %}">Sobre nosotros</a>
+        <a class="d-block py-2" href="{% url 'contact' %}">Contacto</a>
+      </nav>
+
+      <form role="search" action="/search" class="d-flex mb-3">
+        <input name="search" class="form-control form-control-sm" type="search" placeholder="Buscar...">
+        <button class="btn btn-acento btn-sm ms-2" type="submit">Buscar</button>
+      </form>
+
+      {% if request.user.is_authenticated %}
+        <div class="border-top pt-3">
+          <p class="mb-1"><strong>{{ request.user.username }}</strong></p>
+          <a class="d-block py-1" href="{% url 'address' %}">Perfil</a>
+          <a class="d-block py-1" href="{% url 'passwordchange' %}">Cambiar contraseña</a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm mt-2 w-100">Salir</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="border-top pt-3">
+          <a class="d-block py-1" href="{% url 'login' %}">Acceso</a>
+          <a class="d-block py-1" href="{% url 'customerregistration' %}">Registro</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ===== CONTENIDO PRINCIPAL ===== -->
+  <main class="container my-4 flex-grow" id="main-container">
+    {% block banner-slider %}{% endblock %}
+    {% block information %}{% endblock %}
+    {% block main-content %}{% endblock %}
+    {% block payment-gateway %}{% endblock %}
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer text-center py-3 mt-auto">
+    <div class="container">
+      <p class="mb-0">© 2025 Minino Tecs - Ecommerce</p>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <!-- Bootstrap JS bundle  -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ===== Modo oscuro extendido  ===== */
+(function(){
+  const body = document.body;
+  const toggleBtn = document.getElementById('darkModeToggle');
+  if (!toggleBtn) return; 
+
+  const icon = toggleBtn.querySelector('i');
+
+  function applyDarkMode(isDark){
+    // ===== Body =====
+    if (isDark) {
+      body.classList.add('bg-dark','text-light');
+      body.classList.remove('bg-light','text-dark');
+    } else {
+      body.classList.remove('bg-dark','text-light');
+      body.classList.add('bg-light','text-dark');
+    }
+
+    // ===== Modales =====
+    document.querySelectorAll('.modal-content').forEach(modal => {
+      if (isDark) {
+        modal.classList.add('bg-dark','text-light');
+        modal.classList.remove('bg-white','text-dark');
+      } else {
+        modal.classList.remove('bg-dark','text-light');
+        modal.classList.add('bg-white','text-dark');
+      }
+    });
+
+    // ===== Dropdowns =====
+    // document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    //   if (isDark) {
+    //     menu.classList.add('bg-dark','text-light');
+    //     menu.classList.remove('bg-white','text-dark');
+    //   } else {
+    //     menu.classList.remove('bg-dark','text-light');
+    //     menu.classList.add('bg-white','text-dark');
+    //   }
+    // });
+
+    // ===== Tarjetas opcionales =====
+    // document.querySelectorAll('.card').forEach(card => {
+    //   if (isDark) {
+    //     card.classList.add('bg-dark','text-light');
+    //     card.classList.remove('bg-white','text-dark');
+    //   } else {
+    //     card.classList.remove('bg-dark','text-light');
+    //     card.classList.add('bg-white','text-dark');
+    //   }
+    // });
+  }
+
+  // ===== Inicializar según localStorage =====
+  let dark = localStorage.getItem('darkMode') === 'true';
+  applyDarkMode(dark);
+  icon.classList.toggle('fa-sun', dark);
+  icon.classList.toggle('fa-moon', !dark);
+
+  toggleBtn.addEventListener('click', () => {
+    dark = !dark;
+    applyDarkMode(dark);
+    icon.classList.toggle('fa-sun', dark);
+    icon.classList.toggle('fa-moon', !dark);
+    localStorage.setItem('darkMode', dark);
+  });
+})();
+</script>
+
+</body>
 </html>

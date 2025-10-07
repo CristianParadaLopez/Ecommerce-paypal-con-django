@@ -8,32 +8,32 @@ from django.contrib.auth.models import Group
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
-    list_display = ['id','title','discounted_price','category','product_image']
+    list_display = ['id','title','precio_descuento','categoria','imagen_producto']
     
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin): 
-    list_display = ['id','user','locality','state','city','zipcode']
+    list_display = ['id','user','localidad','departamento','codigopostal']
     
 @admin.register(Cart)
 class CartModelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'products', 'quantity']
-    def products(self,obj):
+    list_display = ['id', 'user', 'productos', 'cantidad']
+    def productos(self,obj):
         link = reverse("admin:app_product_change",args=[obj.product.pk])
         return format_html('<a href="{}">{}</a>',link,obj.product.title)
     
     
 @admin.register(Payment)
 class PaymentModelAdmin(admin.ModelAdmin):
-    list_display = ['id','user','amount','razorpay_order_id','razorpay_payment_status','razorpay_payment_id','paid']
+    list_display = ['id','user','amount','paid']
 
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(admin.ModelAdmin):
-    list_display = ['id','user','customers','products','quantity','ordered_date','status','payment']
+    list_display = ['id','user','customers','productos','cantidad','ordered_date','status','payment']
     def customers(self,obj):
         link = reverse("admin:app_customer_change",args=[obj.product.pk])
         return format_html('<a href="{}">{}</a>',link,obj.product)
     
-    def products(self,obj):
+    def productos(self,obj):
         link = reverse("admin:app_product_change",args=[obj.product.pk])
         return format_html('<a href="{}">{}</a>',link,obj.product.title)
     
@@ -45,8 +45,8 @@ class OrderPlacedModelAdmin(admin.ModelAdmin):
     
 @admin.register(Wishlist)
 class WishlistModelAdmin(admin.ModelAdmin):
-    list_display = ['id','user','products']
-    def products(self,obj):
+    list_display = ['id','user','productos']
+    def productos(self,obj):
         link = reverse("admin:app_product_change",args=[obj.product.pk])
         return format_html('<a href="{}">{}</a>',link,obj.product.title)
     

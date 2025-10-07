@@ -1,95 +1,147 @@
- {% extends 'app/base.html' %}
+{% extends 'app/base.html' %}
 {% load static %}
-{% block title %}verificar{% endblock title %}
+{% block title %}Verificar Pedido{% endblock title %}
+
 {% block main-content %}
-<div class="container">
+<div class="container my-5">
+
+    <!-- Mensajes de alerta -->
     {% if messages %}
-    {% for msg in messages %}
-        <div class="alert alert-danger" role="alert">
-            {{msg}}
-        </div>
-    {% endfor %}
-    {% endif %}
-    <div class="row mt-5">
-        <div class="col-sm-6">
-            <h4>Resumen del pedido</h4>
-        <hr>
-        {% for item in cart_items %}
-            <div class="card mb-2">
-                <div class="card-body text-white" style="background: rgb(94,60,135);
-                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-                    <h5>Producto: {{item.product.title}}</h5>
-                    <p>Cantidad: {{item.quantity}}</p>
-                    <p class="fw-bold">Precio: {{item.product.discounted_price}} </p>
-                </div>
+        {% for msg in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         {% endfor %}
-        <p class="f-bold">Total del Costo + USD. 40 = {{totalamount}} </p>
-        <small>Se le agrega el costo del pedido</small>
-        </div>
-        <div class="col-sm-4 offset-sm-1">
-            <h4>Seleccionar dirección de compras</h4>
-            <hr>
-            <form method="post" id="myform" >
-                {% csrf_token %}
-                {% for ad in add %}
-                <div class="card text-white" style="background: rgb(94,60,135);
-                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-                    <h5>{{ad.name}}</h5>
-                    <p class="text-white">móvil : {{ad.mobile}}</p>
-                    <p class="text-white">{{ad.locality}} {{ad.state}} {{ad.city}}  - {{ad.zipcode}}</p>
+    {% endif %}
+
+    <div class="row g-5">
+        <!-- Resumen del pedido -->
+        <div class="col-lg-6">
+            <h4 class="fw-bold mb-4">🛒 Resumen del pedido</h4>
+
+            {% for item in cart_items %}
+            <div class="card mb-3 shadow-sm cart-item-hover rounded-3">
+                <div class="row g-0 align-items-center">
+                    <div class="col-4 text-center p-2">
+                        <img src="{{ item.product.imagen_producto.url }}" 
+                             class="img-fluid rounded shadow-sm hover-scale" 
+                             alt="{{ item.product.title }}">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-truncate fw-bold" title="{{ item.product.title }}">
+                                {{ item.product.title }}
+                            </h6>
+                            <p class="mb-1">Cantidad: <span class="fw-bold">{{ item.cantidad }}</span></p>
+                            <p class="mb-1 text-danger fw-bold">USD {{ item.product.precio_descuento }}</p>
+                            <p class="text-muted mb-0">Subtotal: USD {{ item.total_cost|floatformat:2 }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-                {% endfor %}
-                <div class="form-check mb-3" style="background: rgb(94,60,135);
-                background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);">
-                    <label for="totalamount" class="form-label">Monto Total</label>
-                    <input style="background: rgb(94,60,135);
-                    background: linear-gradient(0deg, rgba(94,60,135,1) 14%, rgba(103,49,110,1) 77%);"  type="number" class="form-control text-white"  name="totalamount" value={{totalamount}} readonly>
+            {% endfor %}
+
+            <div class="alert alert-info mt-4 text-center fw-bold rounded-pill shadow-sm">
+                Total del pedido + USD 40 (envío) = 
+                <span class="text-success">{{ totalamount }}</span>
+            </div>
+        </div>
+
+        <!-- Dirección y pago -->
+        <div class="col-lg-5 offset-lg-1">
+            <h4 class="fw-bold mb-4">📦 Dirección de envío</h4>
+            <form method="post" id="myform">
+                {% csrf_token %}
+                {% for ad in add %}
+                <div class="card mb-3 shadow-sm address-hover rounded-3 p-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="customer_id" value="{{ ad.id }}" {% if forloop.first %}checked{% endif %}>
+                        <label class="form-check-label fw-bold" for="customer_id_{{ ad.id }}">
+                            {{ ad.name }}
+                        </label>
+                    </div>
+                    <p class="mb-1"><i class="bi bi-phone"></i> {{ ad.mobile }}</p>
+                    <p class="mb-0 text-muted">{{ ad.localidad }}, {{ ad.departamento }} - {{ ad.codigopostal }}</p>
                 </div>
-                <div class="text-end">
-                    <div id="paypal-button-container"></div>
-                        
-                    {% comment %} <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continuar</button> {% endcomment %}
-                    {% comment %} <button id="rzp-button1" type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Pago</button> {% endcomment %}
+                {% endfor %}
+
+                <!-- Total -->
+                <div class="mb-4">
+                    <label for="totalamount" class="form-label fw-bold">Monto Total</label>
+                    <input id="totalamount" type="number" class="form-control fw-bold text-center rounded-pill" 
+                           name="totalamount" value="{{ totalamount }}" readonly>
                 </div>
 
+                <!-- Botón PayPal -->
+                <div class="text-center">
+                    <div id="paypal-button-container"></div>
+                </div>
             </form>
         </div>
-        <br>
     </div>
-</div> 
-<br><br>
+</div>
+
+<!-- Estilos -->
+<style>
+.cart-item-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
+    transition: all 0.3s ease-in-out;
+}
+.address-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.6rem 1.5rem rgba(0,0,0,0.12);
+    transition: all 0.3s ease-in-out;
+}
+.hover-scale:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+input[readonly] {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    cursor: not-allowed;
+}
+</style>
 {% endblock main-content %}
 
 {% block payment-gateway %}
-<script src="https://www.paypal.com/sdk/js?client-id=AVNibbIR-fAXfg4Y2zgRyhWG43RUq5SyZrqlXCTm3HAfe5Va64W8kw7pANHwk6-T4C271FY_SxQsY8aV&currency=USD"></script>
-<script>
-  paypal.Buttons({
-    createOrder: function (data, actions) {
-      return actions.order.create({
-        purchase_units: [
-          {
-            amount: {
-              value: '{{ totalamount }}',
-            },
-          },
-        ],
-      });
-    },
-    onApprove: function (data, actions) {
-      return actions.order.capture().then(function (details) {
-        console.log(details);
-        // Hacer algo después de que el pago se haya aprobado
-        window.location.href = '/payment/success/';
-      });
-    },
-    onError: function (err) {
-      console.log(err);
-      // Hacer algo en caso de error en el pago
-    },
-  }).render('#paypal-button-container');
-</script>
+<script src="https://www.paypal.com/sdk/js?client-id=AVNibbIR-fAXfg4Y2zgRyhWG43RUq5SyZrqlXCTm3HAfe5Va64W8kw7pANHwk6-T4C271FY_SxQsY8aV&currency=USD&intent=capture&commit=true"></script>
 
+<script>
+paypal.Buttons({
+  createOrder: function (data, actions) {
+    return actions.order.create({
+      purchase_units: [{ amount: { value: '{{ totalamount }}' } }],
+    });
+  },
+  onApprove: function (data, actions) {
+    return actions.order.capture().then(function (details) {
+        const customerId = document.querySelector('input[name="customer_id"]:checked').value;
+        fetch('/api/save-payment/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({...details, customer_id: customerId})
+        })
+        .then(res => res.json())
+        .then(resp => {
+            if(resp.success){
+                window.location.href = '/payment/success/';
+            } else {
+                alert("Hubo un error guardando el pago. Intenta de nuevo.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Hubo un error guardando el pago. Intenta de nuevo.");
+        });
+    });
+  },
+  onError: function (err) {
+    console.error(err);
+    alert("Ocurrió un error con PayPal. Intenta de nuevo.");
+  }
+}).render('#paypal-button-container');
+</script>
 {% endblock payment-gateway %}

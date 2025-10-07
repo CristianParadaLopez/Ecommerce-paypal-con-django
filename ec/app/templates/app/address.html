@@ -1,37 +1,117 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %}Adderss{% endblock title %}
+{% block title %}Direcciones{% endblock title %}
+
 {% block main-content %}
 <div class="container my-5">
+    <h3 class="mb-4">Bienvenido/a <span class="text-capitalize">{{ request.user }}</span></h3>
     <div class="row">
-    <h3>Bienvenido/a <span class="text-capitalize">{{request.user}}</span></h3>
-    
-<div class="col-sm-2 border-end">
-    <ul class="list-untyled">
-        <li class="d-grid"><a href="{% url 'profile' %}" class="btn">Profile</a></li>
-        <li class="d-grid"><a href="{% url 'address' %}" class="btn btn-primary">Address</a></li>
-    </ul>
-</div>
-
-<div class="col-sm-8 offset-sm-1">
-    <div class="row">
-        {% for ad in add %}
-        <div class="col-sm-6">
-            <div class="card m-2">
-                <div class="card-body">
-                    <h3>Correo: {{forloop.counter}}</h3>
-                    <p>name: {{ad.name}}</p>
-                    <p>locality: {{ad.locality}}</p>
-                    <p>mobile: {{ad.mobile}}</p>
-                    <p>state: {{ad.state}}</p>
-                    <p>city: {{ad.city}}</p>
-                    <p>zipcode: {{ad.zipcode}}</p>
-                    <p class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" type="button" 
-                        class="btn btn-success">Update</a></p>
-                </div>
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow-sm rounded-3">
+                <a class="list-group-item list-group-item-action active">Direcciones</a>
+            </div>
+            <div class="mt-3 d-grid">
+                <!-- Botón para abrir el modal de nueva dirección -->
+                <button class="btn btn-acento btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                    Agregar nueva dirección
+                </button>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Sección principal -->
+        <div class="col-md-9">
+
+            <!-- Lista de direcciones guardadas -->
+            {% if add %}
+                <div class="row">
+                    {% for ad in add %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm rounded-4 position-relative border-0 h-100 card-toggle">
+                            <!-- Datos de la dirección -->
+                            <div class="card-body">
+                                <h5 class="card-title mb-2">{{ ad.name }}</h5>
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2 text-secondary"></i>{{ ad.user.email }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-map-marker-alt me-2 text-secondary"></i>{{ ad.localidad }}, {{ ad.departamento }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-mail-bulk me-2 text-secondary"></i>Código Postal: {{ ad.codigopostal }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-mobile-alt me-2 text-secondary"></i>{{ ad.mobile }}
+                                </p>
+
+                                <!-- Botones de acción -->
+                                <div class="d-flex justify-content-between mt-3">
+                                    <!-- Editar dirección -->
+                                    <a href="{% url 'updateAddress' pk=ad.id %}" class="btn btn-sm btn-primary shadow-sm">Editar</a>
+                                    
+                                    <!-- Eliminar dirección -->
+                                    <form action="{% url 'delete_address' pk=ad.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-sm">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Mensaje no hay direcciones -->
+                <div class="alert alert-info text-center shadow-sm rounded-3 py-4">
+                    No tienes direcciones registradas.
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
+<!-- Modal para agregar nueva dirección -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+      <!-- Encabezado del modal -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAddressModalLabel">Agregar nueva dirección</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Cuerpo del modal con formulario -->
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-acento">Guardar Dirección</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Estilos -->
+<style>
+.card-toggle {
+    transition: all 0.3s ease;
+}
+.card-toggle:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+}
+</style>
+
 {% endblock main-content %}

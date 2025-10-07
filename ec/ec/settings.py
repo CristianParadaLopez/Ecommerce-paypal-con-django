@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url 
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +29,7 @@ SECRET_KEY = 'django-insecure-+^#phz&g+ui2%e&8ozmhvgycn*h%#59!y0mv09$f0i9ub^st^%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,6 +49,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/El_Salvador'
 
 USE_I18N = True
 
@@ -120,9 +127,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR/'media'
-LOGIN_REDIRECT_URL = '/profile'
+LOGIN_REDIRECT_URL = '/address'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -131,10 +143,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# PayPal Configuración Sandbox (demo)
+PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID', 'AXnYfCtPpKZ67Z6A9wJahbYZKuH0a2Sm8ay7IuqiV2htXx7T7c-XZsw_VXcekjF6kt5UMYyD0fRi0S2j')
+PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET', 'EHLbZuqxCre_Fo_LlcibG9gdu3JwszWFPxVU-ZJCYyGZAND3f5-PvOZGKNIEQ6RO3JHjNv2hmX6irHYD')
 
-PAYPAL_CLIENT_ID = 'AXnYfCtPpKZ67Z6A9wJahbYZKuH0a2Sm8ay7IuqiV2htXx7T7c-XZsw_VXcekjF6kt5UMYyD0fRi0S2j'
-PAYPAL_CLIENT_SECRET = 'EHLbZuqxCre_Fo_LlcibG9gdu3JwszWFPxVU-ZJCYyGZAND3f5-PvOZGKNIEQ6RO3JHjNv2hmX6irHYD'
-
-# PAYPAL_CLIENT_ID = 'AYO69mvNZYbFZWqo-Rzz77hQ_Tk34wfteCuPhqjDMk9nf9Q7dvrXwfchVeZK4R5zAbonQBMGpuAuDC9w'
-# PAYPAL_SECRET_KEY = 'EFL2z9LZgAsAEELqEEU9qOISTB1hzsLbXq_awK586B_1KVp6DFhlR57W1xmup1sgF54gnW_jnb1Ysa50'
-PAYPAL_MODE = 'live'  # Cambia a 'live' para producción si es necesario
+PAYPAL_MODE = 'sandbox'  # Cambia a 'live' para producción si es necesario

@@ -1,32 +1,156 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %}Busqueda del resultado{% endblock title %}
+{% block title %}Mi Lista de Deseos{% endblock title %}
+
 {% block main-content %}
 <div class="container my-5">
-<div class="row">
-    <div class="col-sm-8">
-            <div class="row">
-                {% for prod in product %}
-                <div class="col-sm.4 text-center mb-4 hover-shadow">
-                    <a href="{% url 'product-detail' prod.product.id %}" class="btn">
-                        <div>
-                            <img src="{{prod.product.product_image.url}}" width="300px" height="200px" />
-                            <div class="fw-bold text-white style="font-family: Georgia;"">
-                                {{prod.product.title}}
-                            </style=></div>
-                            <div class="fw-bold text-danger">
-                                USD.{{prod.product.discounted_price}}/-
-                                <small class="fw-ligth text-decoration-line-through">{{product.selling_price}}</small>
-                            </div>
-                        </div>
-                        
+
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-danger">
+            <i class="fas fa-heart me-2"></i> Mi Lista de Deseos
+        </h2>
+        <p class=" mb-0">
+            {% if product %}
+                Tienes <strong>{{ product|length }}</strong> producto{{ product|length|pluralize:"s" }} en tu lista.
+            {% else %}
+                No tienes productos en tu lista de deseos por ahora.
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Productos -->
+    <div class="row g-4 justify-content-center">
+        {% for prod in product %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card product-card border-0 shadow-lg h-100 position-relative overflow-hidden">
+
+                <!-- Botón quitar -->
+                <button type="button"
+                        pid="{{ prod.product.id }}"
+                        class="minus-wishlist btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-0 end-0 m-3"
+                        title="Quitar de la lista">
+                    <i class="fas fa-times text-danger"></i>
+                </button>
+
+                <!-- Imagen -->
+                <div class="product-image-wrapper">
+                    <a href="{% url 'product-detail' prod.product.id %}">
+                        <img src="{{ prod.product.imagen_producto.url }}" 
+                             alt="{{ prod.product.title }}" 
+                             class="img-fluid product-image">
                     </a>
                 </div>
-                {% endfor %}
+
+                <!-- Detalles -->
+                <div class="card-body text-center">
+                    <h6 class="fw-semibold text-dark mb-2 product-title">
+                        {{ prod.product.title|truncatechars:40 }}
+                    </h6>
+
+                    <div class="price mb-2">
+                        <span class="fw-bold text-danger fs-5">
+                            USD {{ prod.product.precio_descuento }}
+                        </span>
+                        {% if prod.product.selling_price > prod.product.precio_descuento %}
+                            <small class=" text-decoration-line-through ms-1">
+                                USD {{ prod.product.selling_price }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="card-footer bg-white border-0 text-center">
+                    <div class="d-flex justify-content-center gap-2">
+                        <form action="/add-to-cart/" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="prod_id" value="{{ prod.product.id }}">
+                        <button type="submit" class="btn btn-outline-primary btn-sm px-3 rounded-pill">
+                            Añadir al carrito
+                        </button>
+                    </form>
+                        <a href="{% url 'product-detail' prod.product.id %}" 
+                           class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-sm">
+                            Ver detalles
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center mt-5">
+            <h5 class="">Tu lista de deseos está vacía 😿</h5>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4">
+                Explorar productos
+            </a>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
+<!-- Estilos-->
+<style>
+.product-card {
+  border-radius: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+}
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
 
+/* Imagen */
+.product-image-wrapper {
+  background: linear-gradient(135deg, #fafafa, #f0f0f0);
+  padding: 30px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-image {
+  transition: transform 0.3s ease;
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+}
+
+/* Títulos y precio */
+.product-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 0.95rem;
+}
+.price small {
+  font-size: 0.85rem;
+}
+.minus-wishlist {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+@media (max-width: 576px) {
+  .product-image-wrapper { padding: 20px 10px; }
+}
+</style>
+
+<!-- Script AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('.minus-wishlist').on('click', function(e){
+        e.preventDefault();
+        let id = $(this).attr('pid');
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'minuswishlist' %}",
+            data: { prod_id: id },
+            success: function(data){
+                location.reload();
+            },
+            error: function(){
+                alert("Error al quitar de la lista de deseos");
+            }
+        });
+    });
+});
+</script>
 {% endblock main-content %}
